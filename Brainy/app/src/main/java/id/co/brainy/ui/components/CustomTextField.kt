@@ -32,7 +32,8 @@ fun CustomTextField(
     icon: ImageVector,
     contentDescription: String,
     keyboardType: KeyboardType,
-    isPasswordField: Boolean = false
+    isPasswordField: Boolean = false,
+    enabled: Boolean = true,
 ) {
 
     var isPasswordVisible by remember { mutableStateOf(false) }
@@ -87,6 +88,7 @@ fun CustomTextField(
             ),
         shape = RoundedCornerShape(14.dp),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        enabled = enabled
 
         )
 }
