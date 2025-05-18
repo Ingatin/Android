@@ -24,6 +24,17 @@ data class LoginResponse(
 
 )
 
+data class UserResponse(
+    @SerializedName("userName")
+    val username: String,
+
+    @SerializedName("email")
+    val email: String,
+
+    @SerializedName("userId")
+    val userId: String
+)
+
 
 
 
