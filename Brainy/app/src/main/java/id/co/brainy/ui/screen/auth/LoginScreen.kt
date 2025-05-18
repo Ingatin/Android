@@ -145,16 +145,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(32.dp))
             Button(
                 onClick = {
-
                     viewModel.login(email,password)
-
-
-//                    if (email.isNotBlank() && password.isNotBlank()) {
-//                        println("Login success with email: $email")
-//                        navController.navigate("home")
-//                    } else {
-//                        println("Email or password is empty")
-//                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

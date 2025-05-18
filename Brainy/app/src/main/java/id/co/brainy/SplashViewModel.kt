@@ -2,22 +2,26 @@ package id.co.brainy
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import kotlinx.coroutines.delay
+import id.co.brainy.data.repository.AuthRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class SplashViewModel: ViewModel() {
+class SplashViewModel(private val authRepository: AuthRepository): ViewModel() {
 
-    private val  mutableStateFlow = MutableStateFlow(true)
-    val isLoading = mutableStateFlow.asStateFlow()
+    private val  _isLoading = MutableStateFlow(true)
+    val isLoading = _isLoading.asStateFlow()
+
+    private val _startDestination = MutableStateFlow("login")
+    val startDestination = _startDestination.asStateFlow()
 
     init {
         viewModelScope.launch {
-            delay(3000L)
-            mutableStateFlow.value = false
+            val token = authRepository.getToken().first()
+            _startDestination.value = if (!token.isNullOrEmpty()) "home" else "login"
+            _isLoading.value = false
         }
     }
-
 
 }

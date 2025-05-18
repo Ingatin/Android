@@ -13,11 +13,11 @@ import id.co.brainy.ui.screen.task.MyTaskScreen
 import id.co.brainy.ui.screen.task.TaskScreen
 
 @Composable
-fun BrainyApp(){
+fun BrainyApp(startDestination: String){
 
     val navController = rememberNavController()
 
-    NavHost(navController, startDestination = "login"){
+    NavHost(navController, startDestination = startDestination){
         composable("login"){
             LoginScreen(navController)
         }

@@ -5,9 +5,11 @@ import id.co.brainy.data.model.RegisterReq
 import id.co.brainy.data.network.response.LoginResponse
 import id.co.brainy.data.network.response.RegistResponse
 import id.co.brainy.data.network.retrofit.ApiService
+import id.co.brainy.data.utils.UserPreferences
 import id.co.brainy.data.utils.parseErrorMessage
+import kotlinx.coroutines.flow.Flow
 
-class AuthRepository(private val apiService: ApiService){
+class AuthRepository(private val apiService: ApiService, private val userPreferences: UserPreferences){
 
     suspend fun register(
         username: String,
@@ -31,11 +33,20 @@ class AuthRepository(private val apiService: ApiService){
         return try {
             val request = LoginReq(email,password)
             val response = apiService.login(request)
+            userPreferences.saveToken(response.token)
             Result.success(response)
         }catch (e: Exception){
             val message = parseErrorMessage(e)
             Result.failure(Exception(message))
         }
+    }
+
+    suspend fun logout(){
+        userPreferences.deleteToken()
+    }
+
+    fun getToken(): Flow<String?> {
+        return userPreferences.getToken()
     }
 
 
