@@ -141,10 +141,11 @@ fun RegisterScreen(navController: NavController) {
                 onValueChange = {
                     username = it
                 },
-                placeholder = "username",
+                placeholder = "Username",
                 icon = Icons.Default.AccountCircle,
                 contentDescription = "username Icon",
                 keyboardType = KeyboardType.Text,
+                enabled = !isLoading
             )
             Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
@@ -152,10 +153,11 @@ fun RegisterScreen(navController: NavController) {
                 onValueChange = {
                     email = it
                 },
-                placeholder = "email",
+                placeholder = "Email",
                 icon = Icons.Default.Email,
                 contentDescription = "Email Icon",
                 keyboardType = KeyboardType.Email,
+                enabled = !isLoading
             )
             Spacer(modifier = Modifier.height(24.dp))
             CustomTextField(
@@ -163,11 +165,12 @@ fun RegisterScreen(navController: NavController) {
                 onValueChange = {
                     password = it
                 },
-                placeholder = "password",
+                placeholder = "Password",
                 icon = Icons.Default.Lock,
                 contentDescription = "Password Icon",
                 keyboardType = KeyboardType.Password,
-                isPasswordField = true
+                isPasswordField = true,
+                enabled = !isLoading
             )
             Spacer(modifier = Modifier.height(32.dp))
             Button(

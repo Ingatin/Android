@@ -30,13 +30,13 @@ fun BrainyApp(){
         composable("task"){
             TaskScreen(navController)
         }
-        composable("DetailTask") {
+        composable("detailTask") {
             DetailTaskScreen(navController)
         }
-        composable("Notif") {
+        composable("notif") {
             NotifScreen(navController)
         }
-        composable("MyTask") {
+        composable("myTask") {
             MyTaskScreen(navController)
         }
 
