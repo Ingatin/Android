@@ -21,20 +21,28 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import id.co.brainy.R
+import id.co.brainy.ui.ViewModelFactory
 import id.co.brainy.ui.components.CardMyTask
 import id.co.brainy.ui.components.CardTaskItem
 import id.co.brainy.ui.components.FilterTask
+import id.co.brainy.ui.screen.auth.AuthViewModel
 import id.co.brainy.ui.theme.BrainyTheme
 
 
@@ -54,12 +62,12 @@ fun HomeScreen(
                 Icon(Icons.Filled.Add, "Tambah Tugas Baru")
             }
         }
-    ) { innerPading ->
+    ) { innerPadding ->
 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPading)
+                .padding(innerPadding)
                 .padding(horizontal = 16.dp),
         ) {
             HeaderHome("Hi Mondo", navController)
@@ -111,13 +119,6 @@ fun HomeScreen(
                         color = MaterialTheme.colorScheme.tertiary
                     )
                 )
-//                Text(
-//                    text = "See All",
-//                    style = MaterialTheme.typography.bodyMedium.copy(
-//                        fontSize = 14.sp,
-//                    ),
-//                    textDecoration = TextDecoration.Underline,
-//                )
                 FilterTask()
             }
 
@@ -131,14 +132,26 @@ fun HomeScreen(
                         navController.navigate("DetailTask")
                     }
             )
-
-
         }
     }
 }
 
 @Composable
 fun HeaderHome(user: String, navController: NavController) {
+    val context = LocalContext.current
+    val factory = remember { ViewModelFactory(context) }
+    val viewModel: AuthViewModel = viewModel(factory = factory)
+
+    val logoutState by viewModel.logoutState.collectAsState()
+
+    LaunchedEffect(logoutState) {
+        if (logoutState) {
+            navController.navigate("login") {
+                popUpTo("home") { inclusive = true }
+            }
+        }
+    }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,7 +181,7 @@ fun HeaderHome(user: String, navController: NavController) {
             modifier = Modifier
                 .size(32.dp)
                 .clickable {
-
+                    viewModel.logout()
                 }
         )
     }

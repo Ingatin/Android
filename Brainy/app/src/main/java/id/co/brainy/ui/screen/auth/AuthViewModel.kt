@@ -6,6 +6,7 @@ import id.co.brainy.data.network.response.LoginResponse
 import id.co.brainy.data.network.response.RegistResponse
 import id.co.brainy.data.repository.AuthRepository
 import id.co.brainy.ui.common.UiState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,6 +18,9 @@ class AuthViewModel(private val authRepository: AuthRepository): ViewModel() {
 
     private val _loginState = MutableStateFlow<UiState<LoginResponse>>(UiState.Empty)
     val loginState: StateFlow<UiState<LoginResponse>> = _loginState
+
+    private val _logoutState = MutableStateFlow(false)
+    val logoutState: StateFlow<Boolean> = _logoutState
 
     fun register(username: String, email: String, password: String){
         _registerState.value = UiState.Loading
@@ -40,6 +44,15 @@ class AuthViewModel(private val authRepository: AuthRepository): ViewModel() {
             }.onFailure {
                 _loginState.value = UiState.Error(it.message ?: "Unknown Error")
             }
+        }
+    }
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+            _logoutState.value = true
+            delay(1000)
+            _logoutState.value = false
         }
     }
 }
