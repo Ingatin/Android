@@ -17,22 +17,31 @@ class UserPreferences private constructor(
 ){
 
     private val TOKEN_KEY = stringPreferencesKey("token")
+    private val USER_ID = stringPreferencesKey("userId")
 
-    suspend fun saveToken(token: String){
+    suspend fun saveSession(token: String, userId: String){
         dataStore.edit { preferences ->
             preferences[TOKEN_KEY] = token
+            preferences[USER_ID] = userId
         }
     }
 
-    suspend fun deleteToken(){
+    suspend fun deleteSession(){
         dataStore.edit { preferences ->
             preferences.remove(TOKEN_KEY)
+            preferences.remove(USER_ID)
         }
     }
 
     fun getToken(): Flow<String?>{
         return dataStore.data.map { preferences ->
             preferences[TOKEN_KEY]
+        }
+    }
+
+    fun getUserId(): Flow<String?>{
+        return dataStore.data.map { preferences ->
+            preferences[USER_ID]
         }
     }
 

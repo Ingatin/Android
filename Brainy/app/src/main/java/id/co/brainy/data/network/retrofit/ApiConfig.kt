@@ -11,11 +11,6 @@ object ApiConfig {
 
     private const val BASE_URL = "https://brainy-api-259318012988.asia-southeast2.run.app/api/"
 
-//    fun setToken(token: String?) {
-//        currentToken = token
-//    }
-
-
     fun getApiService(): ApiService{
 
         val loggingInterceptor =
@@ -24,15 +19,6 @@ object ApiConfig {
             } else {
                 HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
             }
-
-//        val authInterceptor = Interceptor { chain ->
-//            val req = chain.request()
-//            val accessToken = currentToken
-//            val requestHeaders = req.newBuilder()
-//                .addHeader("Authorization", "Bearer $accessToken")
-//                .build()
-//            chain.proceed(requestHeaders)
-//        }
 
         val client:OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
@@ -46,6 +32,10 @@ object ApiConfig {
 
         return retrofit.create(ApiService::class.java)
 
+    }
+
+    fun getAuthHeader(token: String?): String{
+        return "Bearer $token"
     }
 
 

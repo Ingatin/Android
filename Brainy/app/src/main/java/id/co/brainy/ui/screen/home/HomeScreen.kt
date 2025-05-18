@@ -70,7 +70,7 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp),
         ) {
-            HeaderHome("Hi Mondo", navController)
+            HeaderHome(navController)
             Spacer(modifier = Modifier.height(20.dp))
             CardTaskItem(
                 title = "Task",
@@ -137,12 +137,17 @@ fun HomeScreen(
 }
 
 @Composable
-fun HeaderHome(user: String, navController: NavController) {
+fun HeaderHome(navController: NavController) {
     val context = LocalContext.current
     val factory = remember { ViewModelFactory(context) }
     val viewModel: AuthViewModel = viewModel(factory = factory)
 
+    val username by viewModel.username.collectAsState()
     val logoutState by viewModel.logoutState.collectAsState()
+
+    LaunchedEffect(Unit) {
+        viewModel.getUser()
+    }
 
     LaunchedEffect(logoutState) {
         if (logoutState) {
@@ -159,7 +164,7 @@ fun HeaderHome(user: String, navController: NavController) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = user,
+            text = "Hi $username",
             style = MaterialTheme.typography.titleLarge.copy(
                 fontSize = 36.sp,
 

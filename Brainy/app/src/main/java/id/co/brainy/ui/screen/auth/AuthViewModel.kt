@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class AuthViewModel(private val authRepository: AuthRepository): ViewModel() {
+class AuthViewModel(private val authRepository: AuthRepository) : ViewModel() {
 
     private val _registerState = MutableStateFlow<UiState<RegistResponse>>(UiState.Empty)
     val registerState: StateFlow<UiState<RegistResponse>> = _registerState
@@ -22,7 +22,10 @@ class AuthViewModel(private val authRepository: AuthRepository): ViewModel() {
     private val _logoutState = MutableStateFlow(false)
     val logoutState: StateFlow<Boolean> = _logoutState
 
-    fun register(username: String, email: String, password: String){
+    private val _username = MutableStateFlow<String?>(null)
+    val username: StateFlow<String?> = _username
+
+    fun register(username: String, email: String, password: String) {
         _registerState.value = UiState.Loading
         viewModelScope.launch {
             val response = authRepository.register(username, email, password)
@@ -35,7 +38,7 @@ class AuthViewModel(private val authRepository: AuthRepository): ViewModel() {
         }
     }
 
-    fun login(email: String, password: String){
+    fun login(email: String, password: String) {
         _loginState.value = UiState.Loading
         viewModelScope.launch {
             val response = authRepository.login(email, password)
@@ -49,10 +52,26 @@ class AuthViewModel(private val authRepository: AuthRepository): ViewModel() {
 
     fun logout() {
         viewModelScope.launch {
-            authRepository.logout()
-            _logoutState.value = true
-            delay(1000)
-            _logoutState.value = false
+            try {
+                authRepository.logout()
+                _logoutState.value = true
+                delay(1000)
+                _logoutState.value = false
+            } catch (e: Exception) {
+                _logoutState.value = false
+            }
         }
+    }
+
+    fun getUser() {
+        viewModelScope.launch {
+            val response = authRepository.getUser()
+            response.onSuccess {
+                _username.value = it.username
+            }.onFailure {
+                _username.value = null
+            }
+        }
+
     }
 }
