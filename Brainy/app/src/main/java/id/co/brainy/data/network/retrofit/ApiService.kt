@@ -4,6 +4,7 @@ import id.co.brainy.data.model.LoginReq
 import id.co.brainy.data.model.RegisterReq
 import id.co.brainy.data.network.response.LoginResponse
 import id.co.brainy.data.network.response.RegistResponse
+import id.co.brainy.data.network.response.TaskResponse
 import id.co.brainy.data.network.response.UserResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -32,6 +33,11 @@ interface ApiService {
     ): UserResponse
 
 //  Task
+    @GET("tasks/user/{userId}")
+    suspend fun getAllTasks(
+        @Header("Authorization") token: String,
+        @Path("userId") userId: String
+    ): TaskResponse
 
 
 }

@@ -1,6 +1,5 @@
 package id.co.brainy.ui.screen.task
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
@@ -15,7 +14,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import id.co.brainy.ui.components.CardMyTask
 import id.co.brainy.ui.components.HomeTabs
 import id.co.brainy.ui.components.headerTask
 import id.co.brainy.ui.theme.BrainyTheme
@@ -38,16 +36,13 @@ fun MyTaskScreen(navController: NavController) {
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        CardMyTask(
-            title = "Tugas harian",
-            category = "Academy",
-            desc = "Menyala tugas",
-            time = "10 hours",
-            modifier = Modifier
-                .clickable {
-                    navController.navigate("DetailTask")
-                }
-        )
+//        CardMyTask(
+//           tasks = ,
+//            modifier = Modifier
+//                .clickable {
+//                    navController.navigate("DetailTask")
+//                }
+//        )
     }
 }
 

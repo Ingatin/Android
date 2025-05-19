@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
@@ -39,6 +41,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import id.co.brainy.R
 import id.co.brainy.ui.ViewModelFactory
+import id.co.brainy.ui.common.UiState
 import id.co.brainy.ui.components.CardMyTask
 import id.co.brainy.ui.components.CardTaskItem
 import id.co.brainy.ui.components.FilterTask
@@ -50,6 +53,22 @@ import id.co.brainy.ui.theme.BrainyTheme
 fun HomeScreen(
     navController: NavController
 ) {
+
+    val context = LocalContext.current
+    val factory = remember { ViewModelFactory(context) }
+    val viewModel: HomeViewModel = viewModel(factory = factory)
+
+    val taskList by viewModel.taskAll.collectAsState()
+
+    val taskCount = when(taskList) {
+        is UiState.Success -> (taskList as UiState.Success).data?.size ?: 0
+        else -> 0
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.getAllTasks()
+    }
+
     Scaffold(
         floatingActionButton = {
             LargeFloatingActionButton(
@@ -67,14 +86,15 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .verticalScroll(rememberScrollState())
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp),
         ) {
             HeaderHome(navController)
             Spacer(modifier = Modifier.height(20.dp))
             CardTaskItem(
-                title = "Task",
-                count = 10,
+                title = "My Task",
+                count = taskCount,
                 modifier = Modifier
                     .clickable {
                         navController.navigate("MyTask")
@@ -122,16 +142,29 @@ fun HomeScreen(
                 FilterTask()
             }
 
-            CardMyTask(
-                title = "Tugas harian",
-                category = "Academy",
-                desc = "Menyala tugas",
-                time = "10 hours",
-                modifier = Modifier
-                    .clickable {
-                        navController.navigate("DetailTask")
+            when (taskList) {
+                is UiState.Success -> {
+                    val tasks = (taskList as UiState.Success).data.orEmpty()
+                    tasks.forEach { task ->
+                        CardMyTask(
+                            tasks = task,
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                                .clickable { }
+                        )
                     }
-            )
+                }
+
+                is UiState.Error -> {
+                    Text(text = (taskList as UiState.Error).errorMessage)
+                }
+
+                else -> {
+                    Text("Belum ada data")
+                }
+            }
+
+
         }
     }
 }

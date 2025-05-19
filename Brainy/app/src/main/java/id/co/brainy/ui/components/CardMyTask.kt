@@ -22,13 +22,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import id.co.brainy.data.network.response.TasksItem
 
 @Composable
 fun CardMyTask(
-    title: String,
-    category: String,
-    desc: String,
-    time: String,
+    tasks: TasksItem,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
@@ -56,14 +54,14 @@ fun CardMyTask(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = title,
+                    text = tasks.title,
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White,
                     )
                 )
                 Text(
-                    text = category,
+                    text = tasks.category,
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
                         .background(color = MaterialTheme.colorScheme.primary.copy(
@@ -77,7 +75,7 @@ fun CardMyTask(
             }
 
             Text(
-                text = desc,
+                text = tasks.desc,
                 style = MaterialTheme.typography.bodySmall.copy(
                     fontWeight = FontWeight.SemiBold,
                     color = Color.White
@@ -88,7 +86,7 @@ fun CardMyTask(
             )
 
             Text(
-                text = time,
+                text = tasks.dueDate,
                 modifier = Modifier
                     .align(Alignment.End)
                     .clip(RoundedCornerShape(12.dp))
@@ -113,10 +111,10 @@ fun CardMyTask(
 @Preview(showBackground = true)
 @Composable
 fun CardMyTaskPreview() {
-    CardMyTask(
-        title = "Task",
-        category = "Category",
-        time = "this time",
-        desc = "this is description"
-    )
+//    CardMyTask(
+//        title = "Task",
+//        category = "Category",
+//        time = "this time",
+//        desc = "this is description"
+//    )
 }

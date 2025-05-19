@@ -110,7 +110,6 @@ fun convertMillisToDate(millis: Long): String {
 }
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun DateTimePreview() {
