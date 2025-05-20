@@ -30,8 +30,13 @@ class TaskRepository(private val apiService: ApiService, private val userPrefere
     suspend fun getTaskByCategory(category: String): Result<List<TasksItem>?>{
         return try {
             val token = userPreferences.getToken().first()
+            val userId = userPreferences.getUserId().first()
 
-            val response = apiService.getTaskByCategory(ApiConfig.getAuthHeader(token), category)
+            if (token.isNullOrEmpty() || userId.isNullOrEmpty()) {
+                return Result.failure(Exception("Token atau UserId kosong"))
+            }
+
+            val response = apiService.getTaskByCategory(ApiConfig.getAuthHeader(token),userId, category)
             Result.success(response.tasks)
         } catch (e: Exception){
             val message = parseErrorMessage(e)
