@@ -23,6 +23,43 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.co.brainy.data.network.response.TasksItem
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.concurrent.TimeUnit
+
+
+fun getTimeRemainingText(targetDateTime: String): String {
+    val format = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
+
+    return try {
+        val now = Calendar.getInstance().time
+        val target = format.parse(targetDateTime)
+
+        if (target != null) {
+            val diffInMillis = target.time - now.time
+
+            if (diffInMillis <= 0) {
+                "the time is over"
+            } else {
+                val days = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+                val hours = TimeUnit.MILLISECONDS.toHours(diffInMillis) % 24
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis) % 60
+
+                when {
+                    days > 0 -> "$days day ago"
+                    hours > 0 -> "$hours hours ago"
+                    minutes > 0 -> "$minutes minutes ago"
+                    else -> "is time"
+                }
+            }
+        } else {
+            "Incorrect date format"
+        }
+    } catch (e: Exception) {
+        "Failed to calculate time"
+    }
+}
 
 @Composable
 fun CardMyTask(
@@ -77,7 +114,7 @@ fun CardMyTask(
             Text(
                 text = tasks.desc,
                 style = MaterialTheme.typography.bodySmall.copy(
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Normal,
                     color = Color.White
                 ),
                 maxLines = 3,
@@ -86,14 +123,14 @@ fun CardMyTask(
             )
 
             Text(
-                text = tasks.dueDate,
+                text = getTimeRemainingText(tasks.dueDate),
                 modifier = Modifier
                     .align(Alignment.End)
                     .clip(RoundedCornerShape(12.dp))
                     .background(color = MaterialTheme.colorScheme.primary)
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 style = MaterialTheme.typography.bodyMedium.copy(
-                    fontWeight = FontWeight.SemiBold,
+                    fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.tertiary
                 ),
             )
@@ -103,8 +140,6 @@ fun CardMyTask(
         }
 
     }
-
-
 }
 
 
