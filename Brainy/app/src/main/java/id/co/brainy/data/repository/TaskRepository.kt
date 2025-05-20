@@ -27,8 +27,20 @@ class TaskRepository(private val apiService: ApiService, private val userPrefere
         }
     }
 
+    suspend fun getTaskByCategory(category: String): Result<List<TasksItem>?>{
+        return try {
+            val token = userPreferences.getToken().first()
+
+            val response = apiService.getTaskByCategory(ApiConfig.getAuthHeader(token), category)
+            Result.success(response.tasks)
+        } catch (e: Exception){
+            val message = parseErrorMessage(e)
+            Result.failure(Exception(message))
+        }
+    }
+
     suspend fun createTask(
-        categoty: String,
+        category: String,
         dueDate: String,
         title: String,
         desc: String
@@ -43,7 +55,7 @@ class TaskRepository(private val apiService: ApiService, private val userPrefere
             val response = apiService.createTask(
                 ApiConfig.getAuthHeader(token),
                 TaskReq(
-                    category = categoty,
+                    category = category,
                     dueDate = dueDate,
                     title = title,
                     userId = userId,

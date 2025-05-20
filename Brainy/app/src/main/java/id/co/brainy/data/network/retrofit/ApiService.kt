@@ -47,5 +47,16 @@ interface ApiService {
         @Body request: TaskReq
     ): TasksItem
 
+    @GET("id/{taskId}")
+    suspend fun getTaskById(
+        @Header("Authorization") token: String,
+        @Path("taskId") taskId: String
+    ): TasksItem
+
+    @GET("tasks/category/{category}")
+    suspend fun getTaskByCategory(
+        @Header("Authorization") token: String,
+        @Path("category") category: String
+    ): TaskResponse
 
 }

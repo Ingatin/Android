@@ -11,6 +11,7 @@ import id.co.brainy.data.network.response.TasksItem
 import id.co.brainy.data.repository.TaskRepository
 import id.co.brainy.ui.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -21,6 +22,12 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
     private val _time = MutableLiveData("")
     var time: LiveData<String> = _time
+
+    private val _taskAll = MutableStateFlow<UiState<List<TasksItem>?>>(UiState.Empty)
+    val taskAll: StateFlow<UiState<List<TasksItem>?>> = _taskAll
+
+    private val _taskCategory = MutableStateFlow<UiState<List<TasksItem>?>>(UiState.Empty)
+    val taskCategory: StateFlow<UiState<List<TasksItem>?>> = _taskCategory
 
     fun selectDateTime(context: Context) {
         val currentDateTime = Calendar.getInstance()
@@ -72,6 +79,29 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
 
+    fun getAllTasks() {
+        viewModelScope.launch {
+            _taskAll.value = UiState.Loading
+            val response = repository.getAllTasks()
+            response.onSuccess {
+                _taskAll.value = UiState.Success(it ?: emptyList())
+            }.onFailure {
+                _taskAll.value = UiState.Error(it.message ?: "Unknown Error")
+            }
+        }
+    }
+
+    fun getTasksByCategory(category: String) {
+        viewModelScope.launch {
+            _taskCategory.value = UiState.Loading
+            val result = repository.getTaskByCategory(category)
+            result.onSuccess {
+                _taskCategory.value = UiState.Success(it ?: emptyList())
+            }.onFailure {
+                _taskCategory.value = UiState.Error(it.message ?: "Unknown Error")
+            }
+        }
+    }
 
 
 }
