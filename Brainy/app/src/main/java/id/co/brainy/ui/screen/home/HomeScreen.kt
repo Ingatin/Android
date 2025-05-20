@@ -65,6 +65,7 @@ fun HomeScreen(
     ) { innerPadding ->
 
         Column(
+
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
