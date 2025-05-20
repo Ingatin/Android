@@ -11,6 +11,7 @@ import id.co.brainy.data.utils.UserPreferences
 import id.co.brainy.data.utils.dataStore
 import id.co.brainy.ui.screen.auth.AuthViewModel
 import id.co.brainy.ui.screen.home.HomeViewModel
+import id.co.brainy.ui.screen.task.TaskViewModel
 
 class ViewModelFactory(private val context: Context) : ViewModelProvider.NewInstanceFactory() {
 
@@ -31,6 +32,9 @@ class ViewModelFactory(private val context: Context) : ViewModelProvider.NewInst
             }
             modelClass.isAssignableFrom(HomeViewModel::class.java) -> {
                 HomeViewModel(taskRepository) as T
+            }
+            modelClass.isAssignableFrom(TaskViewModel::class.java) -> {
+                TaskViewModel(taskRepository) as T
             }
 
             else -> throw IllegalArgumentException("Unknown viewmodel class: " + modelClass.name)

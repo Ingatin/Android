@@ -1,5 +1,6 @@
 package id.co.brainy.ui.screen.task
 
+import android.widget.Toast
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,30 +14,39 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import id.co.brainy.ui.ViewModelFactory
+import id.co.brainy.ui.common.UiState
 import id.co.brainy.ui.components.ButtonCategory
-import id.co.brainy.ui.components.DateTime
-import id.co.brainy.ui.components.convertMillisToDate
 import id.co.brainy.ui.components.headerTask
 import id.co.brainy.ui.theme.BrainyTheme
 
@@ -54,6 +64,28 @@ fun TaskScreen(
 
     var selectedDate by remember { mutableStateOf("") }
     val timePickerState = rememberTimePickerState(is24Hour = true)
+
+
+    val context = LocalContext.current
+    val factory = remember { ViewModelFactory(context) }
+    val viewModel: TaskViewModel = viewModel(factory = factory)
+
+    val createTask by viewModel.createTask.collectAsState()
+    val dateTime by viewModel.time.observeAsState("")
+
+    LaunchedEffect(createTask) {
+        when (val state = createTask) {
+            is UiState.Success -> {
+                Toast.makeText(context, "Task created!", Toast.LENGTH_SHORT).show()
+                navController.popBackStack()
+            }
+            is UiState.Error -> {
+                Toast.makeText(context, "Failed: ${state.errorMessage}", Toast.LENGTH_SHORT).show()
+            }
+            else -> Unit
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -88,12 +120,27 @@ fun TaskScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         )
         TitleTextField("Deadline")
-        DateTime(
-            selectedDate = selectedDate,
-            onDateSelected = { millis ->
-                selectedDate = convertMillisToDate(millis)
+        OutlinedTextField(
+            value = dateTime,
+            onValueChange = {},
+            placeholder = { Text("Date Time") },
+            readOnly = true,
+            trailingIcon = {
+                IconButton(onClick = {
+                    viewModel.selectDateTime(context)
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.DateRange,
+                        contentDescription = "Select date"
+                    )
+                }
             },
-            timePickerState = timePickerState
+            modifier = Modifier
+                .padding(bottom = 22.dp, top = 4.dp)
+                .border(
+                    width = 2.dp, color = Color.LightGray, shape = RoundedCornerShape(14.dp)
+                ),
+            shape = RoundedCornerShape(14.dp),
         )
         TitleTextField("Category")
         Row(
@@ -112,24 +159,6 @@ fun TaskScreen(
                 )
             }
         }
-//        Lazy grid dengan Btn + category
-//        LazyGrid(
-//            columns = GridCells.Fixed(2),
-//            contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
-//            horizontalArrangement = Arrangement.spacedBy(8.dp),
-//            verticalArrangement = Arrangement.spacedBy(8.dp),
-//            modifier = Modifier.fillMaxWidth()
-//        ) {
-//            items(categories) { category ->
-//                ButtonCategory(
-//                    btnTitle = category,
-//                    onCategoryClick = { clickedCategory ->
-//                        selectCategory = clickedCategory
-//                    },
-//                    isSelected = category == selectCategory
-//                )
-//            }
-//        }
         TitleTextField("Description")
         OutlinedTextField(
             value = description,
@@ -154,7 +183,12 @@ fun TaskScreen(
         )
         Button(
             onClick = {
-
+                viewModel.createTask(
+                    title = title,
+                    desc = description,
+                    category = selectCategory ?: "",
+                    dueDate = dateTime
+                )
             },
             modifier = Modifier
                 .fillMaxWidth()

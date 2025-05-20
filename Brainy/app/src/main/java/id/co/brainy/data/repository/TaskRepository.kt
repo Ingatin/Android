@@ -1,5 +1,6 @@
 package id.co.brainy.data.repository
 
+import id.co.brainy.data.model.TaskReq
 import id.co.brainy.data.network.response.TasksItem
 import id.co.brainy.data.network.retrofit.ApiConfig
 import id.co.brainy.data.network.retrofit.ApiService
@@ -23,6 +24,35 @@ class TaskRepository(private val apiService: ApiService, private val userPrefere
         } catch (e: Exception){
             val message = parseErrorMessage(e)
             Result.failure(Exception(message))
+        }
+    }
+
+    suspend fun createTask(
+        categoty: String,
+        dueDate: String,
+        title: String,
+        desc: String
+    ): Result<TasksItem>{
+        return try {
+            val token = userPreferences.getToken().first()
+            val userId = userPreferences.getUserId().first()
+
+            if (token.isNullOrEmpty() || userId.isNullOrEmpty()) {
+                return Result.failure(Exception("Token atau UserId kosong"))
+            }
+            val response = apiService.createTask(
+                ApiConfig.getAuthHeader(token),
+                TaskReq(
+                    category = categoty,
+                    dueDate = dueDate,
+                    title = title,
+                    userId = userId,
+                    desc = desc
+                ))
+            Result.success(response)
+        }catch (e: Exception){
+          val message = parseErrorMessage(e)
+          Result.failure(Exception(message))
         }
     }
 

@@ -10,6 +10,9 @@ data class TaskResponse(
 
 data class TasksItem(
 
+    @field:SerializedName("message")
+    val message: String,
+
     @field:SerializedName("userId")
     val userId: String,
 
