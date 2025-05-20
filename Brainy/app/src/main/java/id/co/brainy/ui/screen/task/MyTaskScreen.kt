@@ -30,6 +30,7 @@ import id.co.brainy.ui.common.UiState
 import id.co.brainy.ui.components.CardMyTask
 import id.co.brainy.ui.components.HomeTabs
 import id.co.brainy.ui.components.headerTask
+import id.co.brainy.ui.screen.home.HomeViewModel
 import id.co.brainy.ui.theme.BrainyTheme
 
 @Composable
@@ -37,17 +38,22 @@ fun MyTaskScreen(navController: NavController) {
 
     val context = LocalContext.current
     val factory = remember { ViewModelFactory(context) }
-    val viewModel: TaskViewModel = viewModel(factory = factory)
-
-    val taskState by viewModel.taskAll.collectAsState()
+    val viewModel: HomeViewModel = viewModel(factory = factory)
 
     var selectedCategory by remember { mutableStateOf("All Task") }
+
+    val taskList by if (selectedCategory == "All Task") {
+        viewModel.taskAll.collectAsState()
+    }else{
+        viewModel.taskCategory.collectAsState()
+    }
+
 
     LaunchedEffect(selectedCategory) {
         if (selectedCategory == "All Task") {
             viewModel.getAllTasks()
         } else {
-//            viewModel.getTasksByCategory(selectedCategory)
+            viewModel.getTasksByCategory(selectedCategory)
         }
     }
 
@@ -70,9 +76,9 @@ fun MyTaskScreen(navController: NavController) {
         Spacer(modifier = Modifier.height(16.dp))
 
 
-        when (taskState) {
+        when (taskList) {
             is UiState.Success -> {
-                val tasks = (taskState as UiState.Success).data.orEmpty()
+                val tasks = (taskList as UiState.Success).data.orEmpty()
                 tasks.forEach { task ->
                     CardMyTask(
                         tasks = task,
@@ -84,7 +90,7 @@ fun MyTaskScreen(navController: NavController) {
             }
 
             is UiState.Error -> {
-                Text(text = (taskState as UiState.Error).errorMessage)
+                Text(text = (taskList as UiState.Error).errorMessage)
             }
 
             else -> {
