@@ -25,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -60,18 +59,19 @@ fun TaskScreen(
     var description by remember { mutableStateOf("") }
 
     var selectCategory by remember { mutableStateOf<String?>(null) }
+
     val categories = listOf("Work", "Academy")
-
-    var selectedDate by remember { mutableStateOf("") }
-    val timePickerState = rememberTimePickerState(is24Hour = true)
-
 
     val context = LocalContext.current
     val factory = remember { ViewModelFactory(context) }
     val viewModel: TaskViewModel = viewModel(factory = factory)
 
     val createTask by viewModel.createTask.collectAsState()
-    val dateTime by viewModel.time.observeAsState("")
+
+    val date by viewModel.date.observeAsState("")
+    val time by viewModel.time.observeAsState("")
+
+    val dateTime by viewModel.dateTime.observeAsState("")
 
     LaunchedEffect(createTask) {
         when (val state = createTask) {
@@ -79,9 +79,11 @@ fun TaskScreen(
                 Toast.makeText(context, "Task created!", Toast.LENGTH_SHORT).show()
                 navController.popBackStack()
             }
+
             is UiState.Error -> {
                 Toast.makeText(context, "Failed: ${state.errorMessage}", Toast.LENGTH_SHORT).show()
             }
+
             else -> Unit
         }
     }
@@ -120,28 +122,57 @@ fun TaskScreen(
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         )
         TitleTextField("Deadline")
-        OutlinedTextField(
-            value = dateTime,
-            onValueChange = {},
-            placeholder = { Text("Date Time") },
-            readOnly = true,
-            trailingIcon = {
-                IconButton(onClick = {
-                    viewModel.selectDateTime(context)
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Select date"
-                    )
-                }
-            },
+        Row(
             modifier = Modifier
-                .padding(bottom = 22.dp, top = 4.dp)
-                .border(
-                    width = 2.dp, color = Color.LightGray, shape = RoundedCornerShape(14.dp)
-                ),
-            shape = RoundedCornerShape(14.dp),
-        )
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            OutlinedTextField(
+                value = time,
+                onValueChange = {},
+                placeholder = { Text("Time") },
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = {
+                        viewModel.selectTime(context)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Select date"
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .border(
+                        width = 2.dp, color = Color.LightGray, shape = RoundedCornerShape(14.dp)
+                    ),
+                shape = RoundedCornerShape(14.dp),
+            )
+            OutlinedTextField(
+                value = date,
+                onValueChange = {},
+                placeholder = { Text("Date") },
+                readOnly = true,
+                trailingIcon = {
+                    IconButton(onClick = {
+                        viewModel.selectDate(context)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = "Select date"
+                        )
+                    }
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .border(
+                        width = 2.dp, color = Color.LightGray, shape = RoundedCornerShape(14.dp)
+                    ),
+                shape = RoundedCornerShape(14.dp),
+            )
+
+        }
+
         TitleTextField("Category")
         Row(
             modifier = Modifier
