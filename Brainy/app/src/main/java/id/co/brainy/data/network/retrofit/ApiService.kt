@@ -3,15 +3,18 @@ package id.co.brainy.data.network.retrofit
 import id.co.brainy.data.model.LoginReq
 import id.co.brainy.data.model.RegisterReq
 import id.co.brainy.data.model.TaskReq
+import id.co.brainy.data.network.response.DeleteResponse
 import id.co.brainy.data.network.response.LoginResponse
 import id.co.brainy.data.network.response.RegistResponse
 import id.co.brainy.data.network.response.TaskResponse
 import id.co.brainy.data.network.response.TasksItem
 import id.co.brainy.data.network.response.UserResponse
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
@@ -59,5 +62,18 @@ interface ApiService {
         @Path("userId") userId: String,
         @Path("category") category: String
     ): TaskResponse
+
+    @PUT("tasks/id/{taskId}")
+    suspend fun editTask(
+        @Header("Authorization") token: String,
+        @Path("taskId") taskId: String,
+        @Body request: TaskReq
+    ): TasksItem
+
+    @DELETE("tasks/id/{taskId}")
+    suspend fun deleteTask(
+        @Header("Authorization") token: String,
+        @Path("taskId") taskId: String
+    ): DeleteResponse
 
 }

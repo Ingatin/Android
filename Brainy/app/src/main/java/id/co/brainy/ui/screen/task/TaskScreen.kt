@@ -55,7 +55,8 @@ import id.co.brainy.ui.theme.BrainyTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskScreen(
-    navController: NavController
+    navController: NavController,
+    taskId: String? = null
 ) {
 
     var title by remember { mutableStateOf("") }
@@ -75,6 +76,62 @@ fun TaskScreen(
     val time by viewModel.time.observeAsState("")
 
     val dateTime by viewModel.dateTime.observeAsState("")
+
+    val taskDetailState by viewModel.taskDetail.collectAsState()
+
+    LaunchedEffect(taskId) {
+        taskId?.let {
+            viewModel.getTaskById(it)
+        }
+    }
+
+    LaunchedEffect(taskDetailState) {
+        if (taskId != null) {
+            when (val state = taskDetailState) {
+                is UiState.Success -> {
+                    state.data?.firstOrNull()?.let { task ->
+                        title = task.title ?: ""
+                        description = task.desc ?: ""
+                        selectCategory = task.category ?: ""
+                        // Format waktu & tanggal jika datanya tersedia
+                        task.dueDate?.let { dueDate ->
+                            val parts = dueDate.split(" ")
+                            if (parts.size == 2) {
+                                viewModel.setDate(parts[0])
+                                viewModel.setTime(parts[1])
+                            }
+                        }
+                    }
+                }
+
+                is UiState.Error -> {
+                    Toast.makeText(context, "Failed to load task", Toast.LENGTH_SHORT).show()
+                }
+
+                else -> Unit
+            }
+        }
+    }
+
+    val editTask by viewModel.editTask.collectAsState()
+
+    LaunchedEffect(editTask) {
+        if (taskId != null) {
+            when (val state = editTask) {
+                is UiState.Success -> {
+                    Toast.makeText(context, "Task updated!", Toast.LENGTH_SHORT).show()
+                    navController.popBackStack()
+                }
+
+                is UiState.Error -> {
+                    Toast.makeText(context, "Failed: ${state.errorMessage}", Toast.LENGTH_SHORT).show()
+                }
+
+                else -> Unit
+            }
+        }
+    }
+
 
     LaunchedEffect(createTask) {
         when (val state = createTask) {
@@ -100,7 +157,7 @@ fun TaskScreen(
 
         ) {
         headerTask(
-            titleHeader = "Create Task",
+            titleHeader = if (taskId != null) "Edit Task" else "Create Task",
             navController = navController
         )
         Spacer(modifier = Modifier.height(31.dp))
@@ -220,31 +277,37 @@ fun TaskScreen(
         )
         Button(
             onClick = {
-                viewModel.createTask(
-                    title = title,
-                    desc = description,
-                    category = selectCategory ?: "",
-                    dueDate = dateTime
-                )
+                val selectedCategory = selectCategory ?: ""
+                val finalDateTime = dateTime ?: ""
+                if (taskId != null) {
+                    // Edit Task
+                    viewModel.editTask(
+                        taskId = taskId,
+                        category = selectedCategory,
+                        dueDate = finalDateTime,
+                        title = title,
+                        desc = description
+                    )
+                } else {
+                    // Create Task
+                    viewModel.createTask(
+                        category = selectedCategory,
+                        dueDate = finalDateTime,
+                        title = title,
+                        desc = description
+                    )
+                }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+            modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary
-            )
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
         ) {
             Text(
-                text = "SAVE",
-                style = MaterialTheme.typography.titleSmall.copy(
-                    fontWeight = FontWeight.SemiBold
-                ),
+                text = if (taskId != null) "Update Task" else "Create Task",
                 color = Color.White,
-                modifier = Modifier.padding(6.dp),
+                fontWeight = FontWeight.SemiBold
             )
         }
-
     }
 }
 

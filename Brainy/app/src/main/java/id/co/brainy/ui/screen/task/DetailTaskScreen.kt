@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,7 +36,6 @@ import id.co.brainy.data.network.response.TasksItem
 import id.co.brainy.ui.ViewModelFactory
 import id.co.brainy.ui.common.UiState
 import id.co.brainy.ui.components.headerTask
-import id.co.brainy.ui.screen.home.HomeViewModel
 import id.co.brainy.ui.theme.BrainyTheme
 
 
@@ -47,15 +47,76 @@ fun DetailTaskScreen(
 
     val context = LocalContext.current
     val factory = remember { ViewModelFactory(context) }
-    val viewModel: HomeViewModel = viewModel(factory = factory)
+    val viewModel: TaskViewModel = viewModel(factory = factory)
 
     val detailTask by viewModel.taskDetail.collectAsState()
+
+    val delete by viewModel.deleteTask.collectAsState()
+
+    val showDialog = remember { mutableStateOf(false) }
+
+
+    LaunchedEffect(delete) {
+        if (delete is UiState.Success) {
+            navController.navigate("home") {
+                popUpTo("detail") { inclusive = true }
+            }
+        }
+    }
+
+
     Log.d("DetailTaskScreen_composable", "Received taskId: $detailTask")
 
     LaunchedEffect(taskId) {
         Log.d("DetailTaskScreen_launScreen", "Received taskId: $taskId")
-        viewModel.getDetailTask(taskId)
+        viewModel.getTaskById(taskId)
     }
+
+    if (showDialog.value) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDialog.value = false },
+            title = {
+                Text(
+                    text = "Konfirmasi Hapus",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                )
+            },
+            text = { Text("Apakah Anda yakin ingin menghapus task ini?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDialog.value = false
+                        viewModel.deleteTask(taskId)
+                    }
+                ) {
+                    Text(
+                        text = "Hapus",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    )
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showDialog.value = false }
+                ) {
+                    Text(
+                        text = "Batal",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    )
+                }
+            }
+        )
+    }
+
 
     when (detailTask) {
         is UiState.Success -> {
@@ -72,8 +133,7 @@ fun DetailTaskScreen(
 
                 ) {
                 headerTask(
-                    titleHeader = task.category
-                    , navController = navController
+                    titleHeader = task.category, navController = navController
                 )
                 Spacer(modifier = Modifier.height(32.dp))
                 Text(
@@ -110,6 +170,7 @@ fun DetailTaskScreen(
                 ) {
                     Button(
                         onClick = {
+                            navController.navigate("task/$taskId")
 
                         },
                         modifier = Modifier.weight(1f),
@@ -130,7 +191,7 @@ fun DetailTaskScreen(
                     }
                     Button(
                         onClick = {
-
+                            showDialog.value = true
                         },
                         modifier = Modifier.weight(1f),
                         shape = RoundedCornerShape(12.dp),
@@ -175,8 +236,10 @@ fun DetailTaskScreenPreview() {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val navController = rememberNavController()
-            DetailTaskScreen(taskId = "O6PHC9ZPBANA7R_",
-                    navController = navController)
+            DetailTaskScreen(
+                taskId = "O6PHC9ZPBANA7R_",
+                navController = navController
+            )
         }
     }
 }

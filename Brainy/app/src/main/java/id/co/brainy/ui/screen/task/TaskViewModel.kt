@@ -3,14 +3,17 @@ package id.co.brainy.ui.screen.task
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import id.co.brainy.data.network.response.DeleteResponse
 import id.co.brainy.data.network.response.TasksItem
 import id.co.brainy.data.repository.TaskRepository
 import id.co.brainy.ui.common.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -18,6 +21,15 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
     private val _createTask = MutableStateFlow<UiState<TasksItem>>(UiState.Empty)
     val createTask: MutableStateFlow<UiState<TasksItem>> = _createTask
+
+    private val _editTask = MutableStateFlow<UiState<TasksItem>>(UiState.Empty)
+    val editTask: MutableStateFlow<UiState<TasksItem>> = _editTask
+
+    private val _taskDetail = MutableStateFlow<UiState<List<TasksItem>?>>(UiState.Loading)
+    val taskDetail: StateFlow<UiState<List<TasksItem>?>> = _taskDetail
+
+    private val _deleteTask = MutableStateFlow<UiState<DeleteResponse>>(UiState.Loading)
+    val deleteTask: MutableStateFlow<UiState<DeleteResponse>> = _deleteTask
 
     private val _date = MutableLiveData("")
     var date: LiveData<String> = _date
@@ -86,6 +98,55 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
                 _createTask.value = UiState.Error(it.message ?: "Unknown Error")
             }
         }
-
     }
+
+    fun getTaskById(taskId: String) {
+        viewModelScope.launch {
+            val result = repository.getTaskById(taskId)
+            Log.d("resultViemodelHome", "result: $result")
+            result
+                .onSuccess { _taskDetail.value = UiState.Success(it ?: emptyList()) }
+                .onFailure { _taskDetail.value = UiState.Error(it.message ?: "Unknown error") }
+        }
+    }
+
+    fun deleteTask(taskId: String){
+        viewModelScope.launch {
+            val result = repository.deleteTask(taskId)
+            Log.d("resultDeleteviewmodel", "result: $result")
+            result
+                .onSuccess { _deleteTask.value = UiState.Success(it)}
+                .onFailure { _deleteTask.value = UiState.Error(it.message ?: "Unknown error") }
+        }
+    }
+
+    fun setDate(newDate: String) {
+        _date.value = newDate
+        updateDateTime()
+    }
+
+    fun setTime(newTime: String) {
+        _time.value = newTime
+        updateDateTime()
+    }
+
+    fun editTask(
+        taskId: String,
+        category: String,
+        dueDate: String,
+        title: String,
+        desc: String
+    ){
+        _editTask.value = UiState.Loading
+        viewModelScope.launch {
+            val response = repository.editTask(taskId, category, dueDate, title, desc)
+            response.onSuccess {
+                _editTask.value = UiState.Success(it)
+            }.onFailure {
+                _editTask.value = UiState.Error(it.message ?: "Unknown Error")
+            }
+        }
+    }
+
+
 }

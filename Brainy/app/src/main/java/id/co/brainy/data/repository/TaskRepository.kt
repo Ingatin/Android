@@ -2,6 +2,7 @@ package id.co.brainy.data.repository
 
 import android.util.Log
 import id.co.brainy.data.model.TaskReq
+import id.co.brainy.data.network.response.DeleteResponse
 import id.co.brainy.data.network.response.TasksItem
 import id.co.brainy.data.network.retrofit.ApiConfig
 import id.co.brainy.data.network.retrofit.ApiService
@@ -62,7 +63,7 @@ class TaskRepository(private val apiService: ApiService, private val userPrefere
         category: String,
         dueDate: String,
         title: String,
-        desc: String
+        desc: String,
     ): Result<TasksItem>{
         return try {
             val token = userPreferences.getToken().first()
@@ -87,6 +88,58 @@ class TaskRepository(private val apiService: ApiService, private val userPrefere
         }
     }
 
+    suspend fun editTask(
+        taskId: String,
+        category: String,
+        dueDate: String,
+        title: String,
+        desc: String
+    ): Result<TasksItem> {
+        return try {
+            val token = userPreferences.getToken().first()
+            val userId = userPreferences.getUserId().first()
 
+            if (token.isNullOrEmpty() || userId.isNullOrEmpty()) {
+                return Result.failure(Exception("Token atau UserId kosong"))
+            }
+
+            val request = TaskReq(
+                category = category,
+                dueDate = dueDate,
+                title = title,
+                userId = userId,
+                desc = desc
+            )
+
+            val response = apiService.editTask(
+                token = ApiConfig.getAuthHeader(token),
+                taskId = taskId,
+                request = request
+            )
+
+            Result.success(response)
+        } catch (e: Exception) {
+            val message = parseErrorMessage(e)
+            Result.failure(Exception(message))
+        }
+    }
+
+    suspend fun deleteTask(
+        taskId: String
+    ): Result<DeleteResponse> {
+        return try {
+            val token = userPreferences.getToken().first()
+            Log.d("deleteTaskRepository", "getTaskById: $taskId")
+            val response = apiService.deleteTask(
+                ApiConfig.getAuthHeader(token),
+                taskId
+            )
+            Log.d("deleteTaskRepository", "getTaskById: $response")
+            Result.success(response)
+        } catch (e: Exception){
+            val message = parseErrorMessage(e)
+            Result.failure(Exception(message))
+        }
+    }
 
 }

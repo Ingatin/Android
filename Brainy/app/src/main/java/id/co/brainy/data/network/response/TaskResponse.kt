@@ -35,3 +35,10 @@ data class TasksItem(
     val createdAt: String,
 
 )
+
+data class DeleteResponse(
+
+    @field:SerializedName("message")
+    val message: String,
+
+)

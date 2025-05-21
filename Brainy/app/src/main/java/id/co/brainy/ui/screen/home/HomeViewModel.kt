@@ -18,8 +18,9 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
     private val _taskCategory = MutableStateFlow<UiState<List<TasksItem>?>>(UiState.Empty)
     val taskCategory: StateFlow<UiState<List<TasksItem>?>> = _taskCategory
 
-    private val _taskDetail = MutableStateFlow<UiState<List<TasksItem>?>>(UiState.Loading)
-    val taskDetail: StateFlow<UiState<List<TasksItem>?>> = _taskDetail
+
+
+
 
     fun getAllTasks() {
         viewModelScope.launch {
@@ -51,13 +52,7 @@ class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
         }
     }
 
-    fun getDetailTask(taskId: String) {
-        viewModelScope.launch {
-            val result = repository.getTaskById(taskId)
-            Log.d("resultViemodelHome", "result: $result")
-            result
-                .onSuccess { _taskDetail.value = UiState.Success(it ?: emptyList()) }
-                .onFailure { _taskDetail.value = UiState.Error(it.message ?: "Unknown error") }
-        }
-    }
+
+
+
 }
