@@ -76,10 +76,15 @@ fun HomeScreen(
         }
     }
 
-    val taskCount = when (taskList) {
-        is UiState.Success -> (taskList as UiState.Success).data?.size ?: 0
-        else -> 0
+    LaunchedEffect(Unit) {
+        viewModel.getAllTasks()
     }
+
+    val taskAllState by viewModel.taskAll.collectAsState()
+
+    val allCount = (taskAllState as? UiState.Success)?.data?.size ?: 0
+    val workCount = (taskAllState as? UiState.Success)?.data?.count { it.category == "Work" } ?: 0
+    val academyCount = (taskAllState as? UiState.Success)?.data?.count { it.category == "Academy" } ?: 0
 
     Scaffold(
         floatingActionButton = {
@@ -106,7 +111,7 @@ fun HomeScreen(
             Spacer(modifier = Modifier.height(20.dp))
             CardTaskItem(
                 title = "My Task",
-                count = taskCount,
+                count = allCount,
                 modifier = Modifier
                     .clickable {
                         navController.navigate("MyTask")
@@ -120,7 +125,7 @@ fun HomeScreen(
             ) {
                 CardTaskItem(
                     title = "Work",
-                    count = 5,
+                    count = workCount,
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
@@ -129,7 +134,7 @@ fun HomeScreen(
                 )
                 CardTaskItem(
                     title = "Academy",
-                    count = 5,
+                    count = academyCount,
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
