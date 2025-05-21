@@ -9,7 +9,6 @@ import androidx.navigation.navArgument
 import id.co.brainy.ui.screen.auth.LoginScreen
 import id.co.brainy.ui.screen.auth.RegisterScreen
 import id.co.brainy.ui.screen.home.HomeScreen
-import id.co.brainy.ui.screen.notif.NotifScreen
 import id.co.brainy.ui.screen.task.DetailTaskScreen
 import id.co.brainy.ui.screen.task.MyTaskScreen
 import id.co.brainy.ui.screen.task.TaskScreen
@@ -49,10 +48,6 @@ fun BrainyApp(startDestination: String){
                 Log.d("DetailTaskScreen_navhost", "Received taskId: $taskId")
                 DetailTaskScreen(navController, taskId)
             }
-        }
-
-        composable("notif") {
-            NotifScreen(navController)
         }
         composable("myTask") {
             MyTaskScreen(navController)

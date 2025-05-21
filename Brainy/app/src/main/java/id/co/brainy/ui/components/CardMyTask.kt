@@ -23,10 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import id.co.brainy.data.network.response.TasksItem
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.concurrent.TimeUnit
+import id.co.brainy.ui.screen.notif.getTimeRemainingText
 
 
 @Composable
@@ -109,37 +106,7 @@ fun CardMyTask(
     }
 }
 
-fun getTimeRemainingText(targetDateTime: String): String {
-    val format = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
 
-    return try {
-        val now = Calendar.getInstance().time
-        val target = format.parse(targetDateTime)
-
-        if (target != null) {
-            val diffInMillis = target.time - now.time
-
-            if (diffInMillis <= 0) {
-                "the time is over"
-            } else {
-                val days = TimeUnit.MILLISECONDS.toDays(diffInMillis)
-                val hours = TimeUnit.MILLISECONDS.toHours(diffInMillis) % 24
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis) % 60
-
-                when {
-                    days > 0 -> "$days day ago"
-                    hours > 0 -> "$hours hours ago"
-                    minutes > 0 -> "$minutes minutes ago"
-                    else -> "is time"
-                }
-            }
-        } else {
-            "Incorrect date format"
-        }
-    } catch (e: Exception) {
-        "Failed to calculate time"
-    }
-}
 
 
 @Preview(showBackground = true)

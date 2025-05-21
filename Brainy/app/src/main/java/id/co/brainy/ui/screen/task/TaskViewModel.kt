@@ -12,6 +12,7 @@ import id.co.brainy.data.network.response.DeleteResponse
 import id.co.brainy.data.network.response.TasksItem
 import id.co.brainy.data.repository.TaskRepository
 import id.co.brainy.ui.common.UiState
+import id.co.brainy.ui.screen.notif.scheduleReminder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -84,6 +85,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     fun createTask(
+        context: Context,
         category: String,
         dueDate: String,
         title: String,
@@ -94,6 +96,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
             val response = repository.createTask(category, dueDate, title, desc)
             response.onSuccess {
                 _createTask.value = UiState.Success(it)
+                scheduleReminder(context, title,desc,dueDate)
             }.onFailure {
                 _createTask.value = UiState.Error(it.message ?: "Unknown Error")
             }
@@ -131,6 +134,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
     }
 
     fun editTask(
+        context: Context,
         taskId: String,
         category: String,
         dueDate: String,
@@ -142,6 +146,7 @@ class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
             val response = repository.editTask(taskId, category, dueDate, title, desc)
             response.onSuccess {
                 _editTask.value = UiState.Success(it)
+                scheduleReminder(context, title,desc, dueDate)
             }.onFailure {
                 _editTask.value = UiState.Error(it.message ?: "Unknown Error")
             }

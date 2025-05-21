@@ -286,7 +286,8 @@ fun TaskScreen(
                         category = selectedCategory,
                         dueDate = finalDateTime,
                         title = title,
-                        desc = description
+                        desc = description,
+                        context = context
                     )
                 } else {
                     // Create Task
@@ -294,7 +295,8 @@ fun TaskScreen(
                         category = selectedCategory,
                         dueDate = finalDateTime,
                         title = title,
-                        desc = description
+                        desc = description,
+                        context = context
                     )
                 }
             },

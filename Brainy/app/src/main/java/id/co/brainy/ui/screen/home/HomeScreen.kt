@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -34,7 +33,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,7 +40,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import id.co.brainy.R
 import id.co.brainy.ui.ViewModelFactory
 import id.co.brainy.ui.common.UiState
 import id.co.brainy.ui.components.CardMyTask
@@ -225,20 +222,12 @@ fun HeaderHome(navController: NavController) {
             modifier = Modifier.weight(1f)
         )
         Icon(
-            painter = painterResource(R.drawable.baseline_notifications_none_32),
-            contentDescription = "Notifications Icon",
-            modifier = Modifier
-                .clickable {
-                    navController.navigate("Notif")
-                }
-        )
-        Spacer(modifier = Modifier.width(14.dp))
-        Icon(
             imageVector = Icons.Default.ExitToApp,
             contentDescription = "Logout Icon",
             modifier = Modifier
                 .size(32.dp)
                 .clickable {
+//                    ShowSimpleNotification(context)
                     viewModel.logout()
                 }
         )
