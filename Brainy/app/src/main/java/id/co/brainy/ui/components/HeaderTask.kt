@@ -20,7 +20,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 
 @Composable
-fun headerTask(titleHeader: String, navController: NavController) {
+fun headerTask(
+    titleHeader: String,
+    navController: NavController) {
     Box(
         modifier = Modifier.fillMaxWidth(),
     ) {

@@ -73,4 +73,11 @@ dependencies {
 //    Datastore
     implementation(libs.androidx.datastore.preferences)
 
+//    Livedata
+    implementation(libs.androidx.runtime.livedata)
+
+//    Worker
+    implementation ("androidx.work:work-runtime-ktx:2.9.0")
+
+
 }

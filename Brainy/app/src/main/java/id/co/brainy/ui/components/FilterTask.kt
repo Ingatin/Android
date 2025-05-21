@@ -7,7 +7,6 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,37 +21,45 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun FilterTask(){
+fun FilterTask(
+    selectedOption: String,
+    onOptionSelected: (String) -> Unit){
     var expanded by remember { mutableStateOf(false) }
+
     Row(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "See All",
+            text = selectedOption,
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontSize = 14.sp,
             ),
             textDecoration = TextDecoration.Underline,
             modifier = Modifier
                 .clickable {
-
+                    expanded = true
                 }
         )
-        IconButton(onClick = { expanded = !expanded }) {
-            Icon(Icons.Default.KeyboardArrowDown, contentDescription = "More options")
-        }
+        Icon(
+            imageVector = Icons.Default.KeyboardArrowDown,
+            contentDescription = "More options",
+            modifier = Modifier
+                .clickable { expanded = true }
+        )
         DropdownMenu(
             expanded = expanded,
             onDismissRequest = { expanded = false }
         ) {
-            DropdownMenuItem(
-                text = { Text("latest") },
-                onClick = { /* Do something... */ }
-            )
-            DropdownMenuItem(
-                text = { Text("Option 2") },
-                onClick = { /* Do something... */ }
-            )
+            listOf("All Task", "Academy", "Work").forEach{ option ->
+                DropdownMenuItem(
+                    text = { Text(option) },
+                    onClick = {
+                        onOptionSelected(option)
+                        expanded = false
+                    }
+                )
+
+            }
         }
     }
 
@@ -61,5 +68,5 @@ fun FilterTask(){
 @Preview(showBackground = true)
 @Composable
 fun FilterTaskPreview() {
-    FilterTask()
+//    FilterTask()
 }
