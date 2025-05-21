@@ -1,6 +1,5 @@
 package id.co.brainy.ui.screen.task
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,7 +43,7 @@ fun MyTaskScreen(navController: NavController) {
 
     val taskList by if (selectedCategory == "All Task") {
         viewModel.taskAll.collectAsState()
-    }else{
+    } else {
         viewModel.taskCategory.collectAsState()
     }
 
@@ -83,8 +82,10 @@ fun MyTaskScreen(navController: NavController) {
                     CardMyTask(
                         tasks = task,
                         modifier = Modifier
-                            .padding(bottom = 8.dp)
-                            .clickable { }
+                            .padding(bottom = 8.dp),
+                        onClick = {
+                            navController.navigate("DetailTask/${task.taskId}")
+                        }
                     )
                 }
             }

@@ -1,5 +1,6 @@
 package id.co.brainy
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,9 +31,14 @@ fun BrainyApp(startDestination: String){
         composable("task"){
             TaskScreen(navController)
         }
-        composable("detailTask") {
-            DetailTaskScreen(navController)
+        composable("DetailTask/{taskId}") { backStackEntry ->
+            val taskId = backStackEntry.arguments?.getString("taskId")
+            if (taskId != null) {
+                Log.d("DetailTaskScreen_navhost", "Received taskId: $taskId")
+                DetailTaskScreen(navController, taskId)
+            }
         }
+
         composable("notif") {
             NotifScreen(navController)
         }

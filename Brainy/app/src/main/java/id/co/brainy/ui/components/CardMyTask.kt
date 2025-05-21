@@ -29,47 +29,14 @@ import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 
-fun getTimeRemainingText(targetDateTime: String): String {
-    val format = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
-
-    return try {
-        val now = Calendar.getInstance().time
-        val target = format.parse(targetDateTime)
-
-        if (target != null) {
-            val diffInMillis = target.time - now.time
-
-            if (diffInMillis <= 0) {
-                "the time is over"
-            } else {
-                val days = TimeUnit.MILLISECONDS.toDays(diffInMillis)
-                val hours = TimeUnit.MILLISECONDS.toHours(diffInMillis) % 24
-                val minutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis) % 60
-
-                when {
-                    days > 0 -> "$days day ago"
-                    hours > 0 -> "$hours hours ago"
-                    minutes > 0 -> "$minutes minutes ago"
-                    else -> "is time"
-                }
-            }
-        } else {
-            "Incorrect date format"
-        }
-    } catch (e: Exception) {
-        "Failed to calculate time"
-    }
-}
-
 @Composable
 fun CardMyTask(
     tasks: TasksItem,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     ElevatedCard(
-//        elevation = CardDefaults.cardElevation(
-//            defaultElevation = 6.dp
-//        ),
+        onClick = onClick,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.secondary.copy(
                 alpha = 0.6f
@@ -139,6 +106,38 @@ fun CardMyTask(
 
         }
 
+    }
+}
+
+fun getTimeRemainingText(targetDateTime: String): String {
+    val format = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
+
+    return try {
+        val now = Calendar.getInstance().time
+        val target = format.parse(targetDateTime)
+
+        if (target != null) {
+            val diffInMillis = target.time - now.time
+
+            if (diffInMillis <= 0) {
+                "the time is over"
+            } else {
+                val days = TimeUnit.MILLISECONDS.toDays(diffInMillis)
+                val hours = TimeUnit.MILLISECONDS.toHours(diffInMillis) % 24
+                val minutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis) % 60
+
+                when {
+                    days > 0 -> "$days day ago"
+                    hours > 0 -> "$hours hours ago"
+                    minutes > 0 -> "$minutes minutes ago"
+                    else -> "is time"
+                }
+            }
+        } else {
+            "Incorrect date format"
+        }
+    } catch (e: Exception) {
+        "Failed to calculate time"
     }
 }
 

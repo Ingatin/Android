@@ -1,5 +1,6 @@
 package id.co.brainy.data.repository
 
+import android.util.Log
 import id.co.brainy.data.model.TaskReq
 import id.co.brainy.data.network.response.TasksItem
 import id.co.brainy.data.network.retrofit.ApiConfig
@@ -37,6 +38,19 @@ class TaskRepository(private val apiService: ApiService, private val userPrefere
             }
 
             val response = apiService.getTaskByCategory(ApiConfig.getAuthHeader(token),userId, category)
+            Result.success(response.tasks)
+        } catch (e: Exception){
+            val message = parseErrorMessage(e)
+            Result.failure(Exception(message))
+        }
+    }
+
+    suspend fun getTaskById(taskId: String): Result<List<TasksItem>?>{
+        return try {
+            val token = userPreferences.getToken().first()
+
+            val response = apiService.getTaskById(ApiConfig.getAuthHeader(token),taskId)
+            Log.d("TaskRepository", "getTaskById: $response")
             Result.success(response.tasks)
         } catch (e: Exception){
             val message = parseErrorMessage(e)

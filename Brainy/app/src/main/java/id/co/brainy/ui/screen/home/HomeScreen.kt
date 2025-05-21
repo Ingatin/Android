@@ -167,8 +167,10 @@ fun HomeScreen(
                         CardMyTask(
                             tasks = task,
                             modifier = Modifier
-                                .padding(bottom = 8.dp)
-                                .clickable { }
+                                .padding(bottom = 8.dp),
+                            onClick = {
+                                navController.navigate("DetailTask/${task.taskId}")
+                            }
                         )
                     }
                 }
