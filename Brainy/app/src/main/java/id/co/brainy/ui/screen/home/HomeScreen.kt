@@ -16,6 +16,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -60,6 +62,8 @@ fun HomeScreen(
 
     var selectedOption by remember { mutableStateOf("All Task") }
 
+
+
     val taskList by if (selectedOption == "All Task") {
         viewModel.taskAll.collectAsState()
     }else{
@@ -85,6 +89,7 @@ fun HomeScreen(
     val allCount = (taskAllState as? UiState.Success)?.data?.size ?: 0
     val workCount = (taskAllState as? UiState.Success)?.data?.count { it.category == "Work" } ?: 0
     val academyCount = (taskAllState as? UiState.Success)?.data?.count { it.category == "Academy" } ?: 0
+
 
     Scaffold(
         floatingActionButton = {
@@ -114,7 +119,7 @@ fun HomeScreen(
                 count = allCount,
                 modifier = Modifier
                     .clickable {
-                        navController.navigate("MyTask")
+                        navController.navigate("MyTask/All Task")
                     }
             )
             Spacer(modifier = Modifier.height(16.dp))
@@ -129,7 +134,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-
+                            navController.navigate("MyTask/Work")
                         }
                 )
                 CardTaskItem(
@@ -138,7 +143,7 @@ fun HomeScreen(
                     modifier = Modifier
                         .weight(1f)
                         .clickable {
-
+                            navController.navigate("MyTask/Academy")
                         }
                 )
             }
@@ -176,6 +181,18 @@ fun HomeScreen(
                         )
                     }
                 }
+                is UiState.Loading -> {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
 
                 is UiState.Error -> {
                     Text(text = (taskList as UiState.Error).errorMessage)
@@ -199,6 +216,53 @@ fun HeaderHome(navController: NavController) {
 
     val username by viewModel.username.collectAsState()
     val logoutState by viewModel.logoutState.collectAsState()
+
+    val showDialog = remember { mutableStateOf(false) }
+
+    if (showDialog.value) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDialog.value = false },
+            title = {
+                Text(
+                    text = "Logout",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                )
+            },
+            text = { Text("Are you sure you want to Logout?") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDialog.value = false
+                        viewModel.logout()
+                    }
+                ) {
+                    Text(
+                        text = "Logout",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    )
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showDialog.value = false }
+                ) {
+                    Text(
+                        text = "Cancel",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    )
+                }
+            }
+        )
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getUser()
@@ -233,7 +297,7 @@ fun HeaderHome(navController: NavController) {
                 .size(32.dp)
                 .clickable {
 //                    ShowSimpleNotification(context)
-                    viewModel.logout()
+                    showDialog.value = true
                 }
         )
     }

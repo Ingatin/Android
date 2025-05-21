@@ -25,6 +25,12 @@ fun ButtonCategory(
         MaterialTheme.colorScheme.primary
     }
 
+    val textColor = if (isSelected) {
+        Color.Gray // Warna teks saat dipilih
+    } else {
+        Color.White // Warna teks default
+    }
+
     Button(
         onClick = {
             onCategoryClick(btnTitle)
@@ -40,7 +46,7 @@ fun ButtonCategory(
             style = MaterialTheme.typography.titleSmall.copy(
                 fontWeight = FontWeight.SemiBold
             ),
-            color = Color.White,
+            color = textColor,
             modifier = Modifier.padding(6.dp),
         )
     }

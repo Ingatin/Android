@@ -12,10 +12,10 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel(private val repository: TaskRepository) : ViewModel() {
 
-    private val _taskAll = MutableStateFlow<UiState<List<TasksItem>?>>(UiState.Empty)
+    private val _taskAll = MutableStateFlow<UiState<List<TasksItem>?>>(UiState.Loading)
     val taskAll: StateFlow<UiState<List<TasksItem>?>> = _taskAll
 
-    private val _taskCategory = MutableStateFlow<UiState<List<TasksItem>?>>(UiState.Empty)
+    private val _taskCategory = MutableStateFlow<UiState<List<TasksItem>?>>(UiState.Loading)
     val taskCategory: StateFlow<UiState<List<TasksItem>?>> = _taskCategory
 
 

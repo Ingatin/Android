@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -56,6 +57,8 @@ fun DetailTaskScreen(
     val showDialog = remember { mutableStateOf(false) }
 
 
+
+
     LaunchedEffect(delete) {
         if (delete is UiState.Success) {
             navController.navigate("home") {
@@ -77,14 +80,14 @@ fun DetailTaskScreen(
             onDismissRequest = { showDialog.value = false },
             title = {
                 Text(
-                    text = "Konfirmasi Hapus",
+                    text = "Confirm Delete",
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.tertiary
                     )
                 )
             },
-            text = { Text("Apakah Anda yakin ingin menghapus task ini?") },
+            text = { Text("Are you sure you want to delete this task?") },
             confirmButton = {
                 Button(
                     onClick = {
@@ -93,7 +96,7 @@ fun DetailTaskScreen(
                     }
                 ) {
                     Text(
-                        text = "Hapus",
+                        text = "Delete",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.tertiary
@@ -106,7 +109,7 @@ fun DetailTaskScreen(
                     onClick = { showDialog.value = false }
                 ) {
                     Text(
-                        text = "Batal",
+                        text = "Cancel",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.SemiBold,
                             color = MaterialTheme.colorScheme.tertiary
@@ -220,10 +223,23 @@ fun DetailTaskScreen(
             val errorMessage = (detailTask as UiState.Error).errorMessage
             Text(text = "Error: $errorMessage", color = Color.Red)
         }
-
+        is UiState.Loading -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(32.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = androidx.compose.ui.Alignment.CenterHorizontally
+            ) {
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text("Memuat data tugas...", style = MaterialTheme.typography.bodyMedium)
+            }
+        }
         else -> {
             Text(text = "Tidak ada data")
         }
+
     }
 }
 

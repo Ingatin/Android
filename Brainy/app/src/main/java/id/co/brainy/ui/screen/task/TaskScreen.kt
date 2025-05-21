@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -78,6 +79,9 @@ fun TaskScreen(
     val dateTime by viewModel.dateTime.observeAsState("")
 
     val taskDetailState by viewModel.taskDetail.collectAsState()
+
+    val showDialog = remember { mutableStateOf(false) }
+
 
     LaunchedEffect(taskId) {
         taskId?.let {
@@ -147,6 +151,80 @@ fun TaskScreen(
             else -> Unit
         }
     }
+
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDialog.value = false },
+            title = {
+                Text(
+                    text = if (taskId != null) "Confirm Update" else "Confirm Create",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.tertiary
+                    )
+                )
+            },
+            text = {
+                Text(
+                    text = if (taskId != null)
+                        "Are you sure you want to update this task?"
+                    else
+                        "Are you sure you want to create this task?"
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showDialog.value = false
+                        val selectedCategory = selectCategory ?: ""
+                        val finalDateTime = dateTime ?: ""
+
+                        if (taskId != null) {
+                            viewModel.editTask(
+                                taskId = taskId,
+                                category = selectedCategory,
+                                dueDate = finalDateTime,
+                                title = title,
+                                desc = description,
+                                context = context
+                            )
+                        } else {
+                            viewModel.createTask(
+                                category = selectedCategory,
+                                dueDate = finalDateTime,
+                                title = title,
+                                desc = description,
+                                context = context
+                            )
+                        }
+                    }
+                ) {
+                    Text(
+                        text = if (taskId != null) "Update" else "Create",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    )
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = { showDialog.value = false }
+                ) {
+                    Text(
+                        text = "Cancel",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    )
+                }
+            }
+        )
+    }
+
+
 
 
     Column(
@@ -277,28 +355,7 @@ fun TaskScreen(
         )
         Button(
             onClick = {
-                val selectedCategory = selectCategory ?: ""
-                val finalDateTime = dateTime ?: ""
-                if (taskId != null) {
-                    // Edit Task
-                    viewModel.editTask(
-                        taskId = taskId,
-                        category = selectedCategory,
-                        dueDate = finalDateTime,
-                        title = title,
-                        desc = description,
-                        context = context
-                    )
-                } else {
-                    // Create Task
-                    viewModel.createTask(
-                        category = selectedCategory,
-                        dueDate = finalDateTime,
-                        title = title,
-                        desc = description,
-                        context = context
-                    )
-                }
+                showDialog.value = true
             },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),

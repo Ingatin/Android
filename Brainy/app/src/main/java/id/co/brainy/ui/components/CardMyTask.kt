@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -35,9 +37,7 @@ fun CardMyTask(
     ElevatedCard(
         onClick = onClick,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondary.copy(
-                alpha = 0.6f
-            )
+            containerColor = MaterialTheme.colorScheme.secondary
         ),
         modifier = modifier
             .fillMaxWidth()
@@ -67,11 +67,13 @@ fun CardMyTask(
                         .clip(RoundedCornerShape(12.dp))
                         .background(color = MaterialTheme.colorScheme.primary.copy(
                         ))
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                        .width(100.dp),
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.tertiary
                     ),
+                    textAlign = TextAlign.Center
                 )
             }
 
@@ -83,12 +85,14 @@ fun CardMyTask(
                 ),
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
             )
 
             Text(
                 text = getTimeRemainingText(tasks.dueDate),
                 modifier = Modifier
+                    .width(150.dp)
                     .align(Alignment.End)
                     .clip(RoundedCornerShape(12.dp))
                     .background(color = MaterialTheme.colorScheme.primary)
@@ -97,6 +101,7 @@ fun CardMyTask(
                     fontWeight = FontWeight.Normal,
                     color = MaterialTheme.colorScheme.tertiary
                 ),
+                textAlign = TextAlign.Center
             )
 
 
@@ -105,6 +110,8 @@ fun CardMyTask(
 
     }
 }
+
+
 
 
 

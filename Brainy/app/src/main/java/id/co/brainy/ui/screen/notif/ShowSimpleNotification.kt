@@ -39,7 +39,7 @@ fun ShowSimpleNotification(context: Context, title: String, desc: String, messag
         .setContentTitle(title)
         .setContentText(message)
         .setStyle(NotificationCompat.BigTextStyle().bigText(desc))
-        .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+        .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setAutoCancel(true)
 
 
@@ -72,9 +72,9 @@ fun getTimeRemainingText(targetDateTime: String): String {
                 val minutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis) % 60
 
                 when {
-                    days > 0 -> "$days day ago"
-                    hours > 0 -> "$hours hours ago"
-                    minutes > 0 -> "$minutes minutes ago"
+                    days > 0 -> "$days day left"
+                    hours > 0 -> "$hours hours left"
+                    minutes > 0 -> "$minutes minutes left"
                     else -> "is time"
                 }
             }
@@ -111,13 +111,13 @@ fun scheduleReminder(context: Context, taskTitle: String, taskDesc: String, date
     }
 
     // 2. Notifikasi 5 detik sebelum waktu target
-    val fiveSecBeforeMillis = targetMillis - TimeUnit.SECONDS.toMillis(5)
+    val fiveSecBeforeMillis = targetMillis - TimeUnit.MINUTES.toMillis(1)
     val delayFiveSec = fiveSecBeforeMillis - now
     if (delayFiveSec > 0) {
         val data5Sec = workDataOf(
             "title" to taskTitle,
             "desc" to taskDesc,
-            "message" to "Task \"$taskTitle\" is almost due in 5 seconds!"
+            "message" to "Task \"$taskTitle\" is almost due in 1 minutes!"
         )
 
         val request5Sec = OneTimeWorkRequestBuilder<ReminderWorker>()

@@ -49,9 +49,11 @@ fun BrainyApp(startDestination: String){
                 DetailTaskScreen(navController, taskId)
             }
         }
-        composable("myTask") {
-            MyTaskScreen(navController)
+        composable("MyTask/{category}") { backStackEntry ->
+            val category = backStackEntry.arguments?.getString("category") ?: "All Task"
+            MyTaskScreen(navController, category)
         }
+
 
     }
 

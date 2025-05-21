@@ -20,10 +20,10 @@ import java.util.Calendar
 
 class TaskViewModel(private val repository: TaskRepository) : ViewModel() {
 
-    private val _createTask = MutableStateFlow<UiState<TasksItem>>(UiState.Empty)
+    private val _createTask = MutableStateFlow<UiState<TasksItem>>(UiState.Loading)
     val createTask: MutableStateFlow<UiState<TasksItem>> = _createTask
 
-    private val _editTask = MutableStateFlow<UiState<TasksItem>>(UiState.Empty)
+    private val _editTask = MutableStateFlow<UiState<TasksItem>>(UiState.Loading)
     val editTask: MutableStateFlow<UiState<TasksItem>> = _editTask
 
     private val _taskDetail = MutableStateFlow<UiState<List<TasksItem>?>>(UiState.Loading)
